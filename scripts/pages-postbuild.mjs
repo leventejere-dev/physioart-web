@@ -2,7 +2,7 @@
 // - out/index.html sends visitors to their language (saved choice, then browser language, then Hungarian)
 // - out/404.html exists for unknown URLs
 // - out/.nojekyll stops Jekyll from hiding the _next folder on branch-based Pages setups
-import { copyFileSync, existsSync, writeFileSync } from "node:fs";
+import { copyFileSync, existsSync, readdirSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 
 const out = "out";
@@ -48,4 +48,35 @@ if (!existsSync(join(out, "404.html"))) {
   else console.warn("pages-postbuild: no 404 page found in out/");
 }
 
-console.log("pages-postbuild: index.html, 404.html and .nojekyll ready");
+// The client router requests navigation segments by a flat file name
+// (`__next.$d$locale.$d$section.__PAGE__.txt`) while the export writes them into nested folders
+// (`__next.$d$locale/$d$section/__PAGE__.txt`). Add flat copies so client-side navigation works
+// on a plain static host instead of falling back to full page loads.
+let flattened = 0;
+function filesUnder(dir, prefix = []) {
+  return readdirSync(dir, { withFileTypes: true }).flatMap((entry) =>
+    entry.isDirectory()
+      ? filesUnder(join(dir, entry.name), [...prefix, entry.name])
+      : [[...prefix, entry.name]],
+  );
+}
+function flattenSegments(dir) {
+  for (const entry of readdirSync(dir, { withFileTypes: true })) {
+    if (!entry.isDirectory()) continue;
+    const full = join(dir, entry.name);
+    if (entry.name.startsWith("__next.")) {
+      for (const parts of filesUnder(full)) {
+        const flat = join(dir, [entry.name, ...parts].join("."));
+        if (!existsSync(flat)) {
+          copyFileSync(join(full, ...parts), flat);
+          flattened++;
+        }
+      }
+    } else if (entry.name !== "_next") {
+      flattenSegments(full);
+    }
+  }
+}
+flattenSegments(out);
+
+console.log(`pages-postbuild: index.html, 404.html, .nojekyll and ${flattened} navigation segments ready`);
