@@ -1,0 +1,8 @@
+:HL["/physioart-web/_next/static/chunks/0m4iay8n816l7.css","style"]
+:HL["/physioart-web/_next/static/chunks/3prkbr8-4_cua.css","style"]
+:HL["/physioart-web/_next/static/media/4cf231d25563e07b-s.p.2874ccu1_u7jf.woff2","font",{"crossOrigin":"","type":"font/woff2"}]
+:HL["/physioart-web/_next/static/media/62f37606a5bd6f6f-s.p.0klc_mi0-5f4_.woff2","font",{"crossOrigin":"","type":"font/woff2"}]
+3:[["children",{"s":"__PAGE__","h":160}]]
+2:[["children",{"s":{"n":"section","t":"d","k":"services","s":[]},"h":64,"c":"$Q3"}]]
+1:[["children",{"s":{"n":"locale","t":"d","k":"en","s":["api","robots.txt","sitemap.xml"]},"h":48,"c":"$Q2"}]]
+0:{"b":"VkugQ0PmLOY9EG_iNDLY2","t":{"t":{"s":"","h":80,"c":"$Q1"}}}

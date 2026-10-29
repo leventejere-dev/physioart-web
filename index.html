@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="hu">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>PhysioArt</title>
+<meta http-equiv="refresh" content="0; url=hu/">
+<script>
+(function () {
+  var supported = ["hu", "ro", "en"];
+  var saved = (document.cookie.match(/(?:^|; )NEXT_LOCALE=(hu|ro|en)/) || [])[1];
+  var lang = saved;
+  if (!lang) {
+    var prefs = navigator.languages || [navigator.language || ""];
+    for (var i = 0; i < prefs.length && !lang; i++) {
+      var code = String(prefs[i]).slice(0, 2).toLowerCase();
+      if (supported.indexOf(code) > -1) lang = code;
+    }
+  }
+  location.replace((lang || "hu") + "/");
+})();
+</script>
+</head>
+<body><a href="hu/">PhysioArt</a></body>
+</html>
