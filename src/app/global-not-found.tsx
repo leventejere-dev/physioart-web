@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Instrument_Sans } from "next/font/google";
 import { themeInitScript } from "@/lib/theme-script";
+import { basePath } from "@/lib/paths";
 import "./globals.css";
 
 const sans = Instrument_Sans({ subsets: ["latin", "latin-ext"], variable: "--font-instrument-sans" });
@@ -11,9 +12,9 @@ export const metadata: Metadata = {
 };
 
 const messages = [
-  { lang: "hu", title: "Az oldal nem található", link: "Vissza a főoldalra", href: "/hu" },
-  { lang: "ro", title: "Pagina nu a fost găsită", link: "Înapoi la pagina principală", href: "/ro" },
-  { lang: "en", title: "Page not found", link: "Back to the homepage", href: "/en" },
+  { lang: "hu", title: "Az oldal nem található", link: "Vissza a főoldalra", href: `${basePath}/hu/` },
+  { lang: "ro", title: "Pagina nu a fost găsită", link: "Înapoi la pagina principală", href: `${basePath}/ro/` },
+  { lang: "en", title: "Page not found", link: "Back to the homepage", href: `${basePath}/en/` },
 ];
 
 export default function GlobalNotFound() {

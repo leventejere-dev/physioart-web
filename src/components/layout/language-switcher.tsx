@@ -1,7 +1,9 @@
 "use client";
 
+import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { localeLabels, locales, type Locale, type Localized } from "@/i18n/config";
+import { normalizePath } from "@/lib/paths";
 
 interface LanguageSwitcherProps {
   locale: Locale;
@@ -15,7 +17,7 @@ function rememberLocale(locale: Locale) {
 }
 
 export function LanguageSwitcher({ locale, routes, label, size = "sm" }: LanguageSwitcherProps) {
-  const pathname = usePathname();
+  const pathname = normalizePath(usePathname());
   const current = routes.find((route) => route[locale] === pathname);
 
   return (
@@ -26,8 +28,9 @@ export function LanguageSwitcher({ locale, routes, label, size = "sm" }: Languag
           const targetHref = current?.[target] ?? `/${target}`;
           return (
             <li key={target}>
-              <a
+              <Link
                 href={targetHref}
+                prefetch={false}
                 hrefLang={target}
                 lang={target}
                 aria-current={active ? "true" : undefined}
@@ -39,7 +42,7 @@ export function LanguageSwitcher({ locale, routes, label, size = "sm" }: Languag
               >
                 <span aria-hidden="true">{localeLabels[target].short}</span>
                 <span className="sr-only">{localeLabels[target].name}</span>
-              </a>
+              </Link>
             </li>
           );
         })}

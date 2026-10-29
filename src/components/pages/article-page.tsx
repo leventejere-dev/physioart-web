@@ -5,7 +5,7 @@ import { formatDate, type Locale } from "@/i18n/config";
 import { fill, type Dictionary } from "@/i18n/dictionaries";
 import { href } from "@/i18n/routes";
 import { articles, newsCategoryLabels, type Article } from "@/content/news";
-import { absoluteUrl } from "@/lib/seo";
+import { absoluteUrl, assetUrl } from "@/lib/seo";
 import { Breadcrumbs } from "@/components/ui/breadcrumbs";
 import { FinalCta } from "@/components/ui/final-cta";
 import { ArticleCard, ArticleCover } from "@/components/cards/article-card";
@@ -139,7 +139,7 @@ export function ArticlePage({ article, locale, dict }: { article: Article; local
         description={article.excerpt[locale]}
         date={article.date}
         locale={locale}
-        image={article.cover ? absoluteUrl(article.cover.src.src) : undefined}
+        image={article.cover ? assetUrl(article.cover.src.src) : undefined}
       />
     </>
   );

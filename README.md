@@ -43,6 +43,7 @@ Quality checks: `npm run lint` and `npx tsc --noEmit`.
 | --- | --- |
 | `NEXT_PUBLIC_SITE_URL` | Public URL of this site. Used for canonical URLs, `hreflang`, sitemap and Open Graph. Default `https://physioart.ro`. |
 | `NEXT_PUBLIC_PORTAL_URL` | Base URL of the existing PhysioArt client portal. All "client login" and portal booking links, plus the privacy and terms links, point here. Default `https://dev.physioart.ro` (the only live portal today). **Set the production portal URL before launch.** |
+| `SITE_NOINDEX` | Set to `1` on review/staging deployments (such as the `*.vercel.app` review link) to send `X-Robots-Tag: noindex` and a disallow-all `robots.txt`. Leave unset on the live site. |
 | `CONTACT_WEBHOOK_URL` | Where contact-form messages are delivered (server-side). Leave empty until a destination is agreed. |
 | `CONTACT_WEBHOOK_SECRET` | Optional bearer token sent with each webhook request. |
 
@@ -56,11 +57,11 @@ src/
       [section]/page.tsx      About, Services, News, Contact, Booking (localised slugs)
       [section]/[slug]/       Service detail and news article pages
       not-found.tsx           Localised 404
-    api/contact/route.ts      Contact form endpoint
+    api/contact/route.node.ts Contact form endpoint (server build only)
     global-not-found.tsx      404 for paths outside any route
-    sitemap.ts, robots.ts     SEO files (with hreflang alternates)
+    sitemap.xml/, robots.txt/ SEO route handlers (server build only)
     globals.css               Design tokens, light/dark palette, components, motion
-  proxy.ts                    Language redirect for "/" and real 404 status for unknown paths
+  proxy.node.ts               Language redirect for "/" and real 404 status for unknown paths (server build only)
   config/site.ts              Phone, email, address, maps, app store, portal and legal URLs
   i18n/
     config.ts                 Locales and date formatting
@@ -132,9 +133,33 @@ Any endpoint that accepts JSON works: the portal backend, Formspree, Make, n8n o
 
 ## Deployment
 
-The site uses a proxy (language redirect, 404 handling) and an API route, so it needs a Node.js host rather than a static export.
+There are two build targets.
 
-**Vercel (recommended):** import the GitHub repository, set the environment variables above, deploy. Test on the generated `*.vercel.app` URL.
+### GitHub Pages (review link)
+
+A fully static copy is published to `https://<owner>.github.io/physioart-web/` from the `gh-pages` branch (Settings → Pages → Deploy from a branch → `gh-pages` / root).
+
+To publish the current `main`:
+
+```bash
+npm run deploy:pages
+```
+
+The script builds with the right base path and site URL (taken from the `origin` remote) and force-pushes `out/` to `gh-pages`.
+
+- Static mode (`GITHUB_PAGES=1`) exports every page to `out/`, served under the repository sub-path (`BASE_PATH`).
+- Server-only files end in `.node.ts` (language proxy, contact API, sitemap.xml, robots.txt) and are left out of this build. `out/index.html` redirects visitors to their language instead.
+- The copy is marked `noindex`, so it does not compete with the current physioart.ro in search results.
+- The contact form has no server here. Build with `NEXT_PUBLIC_CONTACT_ENDPOINT` (for example a Formspree form URL) to enable it; without one, the form tells visitors to call or email.
+- Images are served pre-sized (no on-the-fly optimisation on a static host).
+
+**Automatic deploys (optional):** `docs/github-actions/deploy-pages.yml` is a ready workflow that builds and deploys on every push to `main`. Move it to `.github/workflows/` and switch Pages to "GitHub Actions". Pushing workflow files needs a token with the `workflow` scope (`gh auth refresh -s workflow`).
+
+### Node.js server (recommended for the live site)
+
+The full build includes the language redirect, real 404 status codes, the contact API, image optimisation, sitemap and robots.txt.
+
+**Vercel:** import the GitHub repository, set the environment variables above, deploy.
 
 **Any Node.js server:**
 

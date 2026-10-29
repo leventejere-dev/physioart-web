@@ -22,6 +22,11 @@ function applyTheme(theme: Theme) {
   document.documentElement.classList.toggle("dark", dark);
 }
 
+/** Re-applies the saved theme, e.g. after a navigation re-renders the <html> element. */
+export function syncTheme() {
+  applyTheme(readTheme());
+}
+
 export function setTheme(theme: Theme) {
   try {
     localStorage.setItem(THEME_STORAGE_KEY, theme);

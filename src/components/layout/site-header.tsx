@@ -8,6 +8,8 @@ import type { Locale, Localized } from "@/i18n/config";
 import type { Dictionary } from "@/i18n/dictionaries";
 import { href, type SectionKey } from "@/i18n/routes";
 import { Logo } from "@/components/ui/logo";
+import { normalizePath } from "@/lib/paths";
+import { syncTheme } from "@/lib/theme";
 import { LanguageSwitcher } from "./language-switcher";
 import { ThemeMenu, ThemeSegmented } from "./theme-toggle";
 
@@ -23,7 +25,7 @@ interface SiteHeaderProps {
 const navSections = ["about", "services", "news", "contact"] as const satisfies readonly SectionKey[];
 
 export function SiteHeader({ locale, labels, routes, loginUrl, phone, address }: SiteHeaderProps) {
-  const pathname = usePathname();
+  const pathname = normalizePath(usePathname());
   const dialogRef = useRef<HTMLDialogElement>(null);
   const bookingHref = href(locale, "booking");
 
@@ -40,9 +42,11 @@ export function SiteHeader({ locale, labels, routes, loginUrl, phone, address }:
   const openMenu = () => dialogRef.current?.showModal();
   const closeMenu = () => dialogRef.current?.close();
 
-  // Close the menu whenever the route changes.
+  // On every route change: close the menu and re-apply the saved theme
+  // (switching language swaps the root layout, which resets the <html> class).
   useEffect(() => {
     dialogRef.current?.close();
+    syncTheme();
   }, [pathname]);
 
   return (

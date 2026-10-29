@@ -16,6 +16,14 @@ interface ContactFormProps {
 
 const fieldOrder: ContactField[] = ["name", "email", "phone", "subject", "message", "consent"];
 
+/**
+ * Where messages are posted. On a server build this is the built-in API route.
+ * A static build (GitHub Pages) has no server, so it needs NEXT_PUBLIC_CONTACT_ENDPOINT
+ * (e.g. a Formspree form URL); without one the form explains that online messages are not available yet.
+ */
+const contactEndpoint =
+  process.env.NEXT_PUBLIC_CONTACT_ENDPOINT || (process.env.NEXT_PUBLIC_STATIC_EXPORT ? "" : "/api/contact");
+
 export function ContactForm({ locale, labels, privacyUrl, email }: ContactFormProps) {
   const formRef = useRef<HTMLFormElement>(null);
   const [errors, setErrors] = useState<Partial<Record<ContactField, ContactError>>>({});
@@ -47,11 +55,16 @@ export function ContactForm({ locale, labels, privacyUrl, email }: ContactFormPr
       return;
     }
 
+    if (!contactEndpoint) {
+      setStatus("notConfigured");
+      return;
+    }
+
     setStatus("sending");
     try {
-      const response = await fetch("/api/contact", {
+      const response = await fetch(contactEndpoint, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json", Accept: "application/json" },
         body: JSON.stringify(payload),
       });
       if (response.ok) {

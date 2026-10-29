@@ -8,15 +8,11 @@ import { Logo } from "@/components/ui/logo";
 import { AppStoreButtons } from "@/components/ui/app-store-buttons";
 import { FacebookIcon, InstagramIcon } from "@/components/ui/brand-icons";
 
-async function currentYear() {
-  "use cache";
-  return new Date().getFullYear();
-}
-
-export async function SiteFooter({ locale, dict }: { locale: Locale; dict: Dictionary }) {
+export function SiteFooter({ locale, dict }: { locale: Locale; dict: Dictionary }) {
   const t = dict.footer;
   const address = formatAddress(locale);
-  const year = await currentYear();
+  // Set at build time in next.config.ts.
+  const year = process.env.BUILD_YEAR;
 
   const pages = [
     { href: href(locale, "about"), label: dict.nav.about },

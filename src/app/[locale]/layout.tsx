@@ -38,6 +38,8 @@ export async function generateMetadata({ params }: LayoutProps<"/[locale]">): Pr
     description: dict.meta.siteDescription,
     applicationName: site.name,
     formatDetection: { telephone: false },
+    // Review deployments (e.g. GitHub Pages) must not compete with the live site in search results.
+    ...(process.env.SITE_NOINDEX === "1" ? { robots: { index: false, follow: false } } : {}),
     other: {
       "apple-itunes-app": "app-id=6764026641",
     },
