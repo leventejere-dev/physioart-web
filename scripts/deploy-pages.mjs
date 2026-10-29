@@ -32,11 +32,11 @@ const out = "out";
 const commit = read("git rev-parse --short HEAD");
 const name = read("git config user.name");
 const email = read("git config user.email");
-const identity = `-c user.name="${name}" -c user.email="${email}"`;
+const identity = `-c core.autocrlf=false -c user.name="${name}" -c user.email="${email}"`;
 
 rmSync(join(out, ".git"), { recursive: true, force: true });
 sh("git init -q -b gh-pages", { cwd: out });
-sh("git add -A", { cwd: out });
+sh("git -c core.autocrlf=false add -A", { cwd: out });
 sh(`git ${identity} commit -q -m "Deploy ${commit}"`, { cwd: out });
 sh(`git push -f -q "${origin}" gh-pages`, { cwd: out });
 if (existsSync(join(out, ".git"))) rmSync(join(out, ".git"), { recursive: true, force: true });
